@@ -38,20 +38,52 @@ app.get('/users',async(req,res) =>{
   res.send(allUsers)
 })
 
+//sarver thke id diye dat khuje bar korer jnno
 app.get('/users/:id', async(req,res) =>{
   console.log('params in the server',req.params)
   const id = req.params.id
-  const query = {_id: new ObjectId(id)}
+  const query = { _id: new ObjectId(id)}
+  const result = await users.findOne(query)
   res.send(result)
 })
 
+// post korer jonno
 app.post('/users', async (req, res)=>{
   const newUser = req.body
   const result = await users.insertOne(newUser)
   res.send(result)
 
   console.log('Adding new user', newUser)
+})
+
+//uptdate korer jonno
+app.patch('/users/:id', async (req,res) =>{
+  const id = req.params.id
+  const updatedUser = req.body
+  console.log('Updating user with ID:',id ,'with data',updatedUser)
   
+const filter = {
+  _id: new ObjectId(id)
+}
+
+const updateDoc = {
+  $set: {
+    name: updatedUser.name,
+    email: updatedUser.email
+  }
+}
+
+const result = await users.updateOne(filter, updateDoc)
+res.send(result)
+
+})
+
+//delete korar jonno
+app.delete('/users/:id', async(req,res)=>{
+  const id = req.params.id
+  const query ={_id: new ObjectId(id)}
+  const result = await users.deleteOne(query)
+  res.send(result)
 })
 
 app.listen(PORT,() =>{
